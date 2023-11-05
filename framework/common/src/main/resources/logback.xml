@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!-- 配置属性 -->
+    <property name="pattern" value="%d{HH:mm:ss.SSS} %-5level %class.%method - %line | %msg%n"/>
+
+    <!-- 配置appender -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 输出流对象，也可采用System.err -->
+        <target>System.out</target>
+        <!-- 设置日志格式 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 配置 logger -->
+    <root level="debug">
+        <appender-ref ref="console"/>
+    </root>
+</configuration>
