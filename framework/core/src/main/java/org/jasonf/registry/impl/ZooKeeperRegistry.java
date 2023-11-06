@@ -38,7 +38,7 @@ public class ZooKeeperRegistry implements Registry {
         if (!ZooKeeperUtil.exists(zooKeeper, hostPath))
             ZooKeeperUtil.create(zooKeeper, hostPath, CreateMode.EPHEMERAL);    // 临时节点
         if (log.isDebugEnabled()) {
-            log.debug("服务: [{}] 注册成功", iface);
+            log.debug("服务 [{}] 注册成功", iface);
         }
     }
 

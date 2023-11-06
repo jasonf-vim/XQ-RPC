@@ -1,18 +1,18 @@
 package org.jasonf.proxy;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.InvokerBootstrap;
 import org.jasonf.exception.NetworkException;
+import org.jasonf.transfer.message.Message;
+import org.jasonf.transfer.message.Request;
 import org.jasonf.netty.BootstrapHolder;
 import org.jasonf.registry.Registry;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -28,9 +28,9 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public class RPCInvocationHandler implements InvocationHandler {
     private Registry registry;
-    private Class<?> iface;
+    private String iface;
 
-    public RPCInvocationHandler(Registry registry, Class<?> iface) {
+    public RPCInvocationHandler(Registry registry, String iface) {
         this.registry = registry;
         this.iface = iface;
     }
@@ -38,7 +38,7 @@ public class RPCInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // 1、从注册中心拉取服务列表
-        List<InetSocketAddress> nodes = registry.detect(iface.getName());
+        List<InetSocketAddress> nodes = registry.detect(iface);
         InetSocketAddress node = nodes.get(0);
         if (log.isDebugEnabled()) {
             log.debug("node{ip: {}, port: {}}", node.getHostString(), node.getPort());
@@ -47,16 +47,29 @@ public class RPCInvocationHandler implements InvocationHandler {
         // todo 支持不同服务调用策略（负载均衡）
         Channel channel = getAvailableChannel(node);    // 2、与服务节点建立连接
 
-        // 3、发送请求数据
-        CompletableFuture<Object> resultFuture = new CompletableFuture<>();
-        channel.writeAndFlush(Unpooled.copiedBuffer("I'm invoker".getBytes(Charset.defaultCharset()))).addListener(
-                (ChannelFutureListener) promise -> {
-                    if (!promise.isSuccess()) resultFuture.completeExceptionally(promise.cause());
-                }
-        );
-        InvokerBootstrap.PENDING_REQUEST.put(1L, resultFuture);    // 挂起请求
+        // 3、封装请求
+        Request request = Request.builder()
+                .iface(iface)
+                .method(method.getName())
+                .paramType(method.getParameterTypes())
+                .paramValue(args)
+                .build();
+        Message message = Message.builder()
+                .ID(1L)
+                .messageType((byte) 1)
+                .serialType((byte) 1)
+                .compressType((byte) 1)
+                .payload(request)
+                .build();
 
-        // 4、等待结果返回
+        // 4、发送请求数据
+        CompletableFuture<Object> resultFuture = new CompletableFuture<>();
+        channel.writeAndFlush(message).addListener((ChannelFutureListener) promise -> {
+            if (!promise.isSuccess()) resultFuture.completeExceptionally(promise.cause());
+        });
+        InvokerBootstrap.PENDING_REQUEST.put(message.getID(), resultFuture);    // 挂起请求
+
+        // 5、等待结果返回
         return resultFuture.get(3, TimeUnit.SECONDS);
     }
 

@@ -1,17 +1,19 @@
 package org.jasonf;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.boot.Bootstrap;
+import org.jasonf.channel.handler.MethodInvokeHandler;
+import org.jasonf.channel.handler.RequestDecoder;
 import org.jasonf.config.ProvideConfig;
 
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,13 +62,10 @@ public class ProviderBootstrap extends Bootstrap {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast(new SimpleChannelInboundHandler<ByteBuf>() {
-                                @Override
-                                protected void channelRead0(ChannelHandlerContext context, ByteBuf msg) throws Exception {
-                                    log.info("receive msg: [{}]", msg.toString(Charset.defaultCharset()));
-                                    context.channel().writeAndFlush(Unpooled.copiedBuffer("I'm provider".getBytes(Charset.defaultCharset())));
-                                }
-                            });
+                            socketChannel.pipeline()
+                                    .addLast(new LoggingHandler())
+                                    .addLast(new RequestDecoder())
+                                    .addLast(new MethodInvokeHandler());
                         }
                     });
             ChannelFuture channelFuture = bootstrap.bind(port).sync();

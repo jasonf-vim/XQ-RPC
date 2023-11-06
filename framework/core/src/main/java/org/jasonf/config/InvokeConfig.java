@@ -27,10 +27,11 @@ public class InvokeConfig<T> {
         this.registry = registry;
     }
 
+    @SuppressWarnings("unchecked")
     public T get() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Class<?>[] interfaces = {iface};
-        InvocationHandler invocationHandler = new RPCInvocationHandler(registry, iface);
+        InvocationHandler invocationHandler = new RPCInvocationHandler(registry, iface.getName());
         return (T) Proxy.newProxyInstance(classLoader, interfaces, invocationHandler);
     }
 }

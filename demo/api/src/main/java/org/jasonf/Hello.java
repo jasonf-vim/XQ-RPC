@@ -7,5 +7,5 @@ package org.jasonf;
  */
 
 public interface Hello {
-    Object greet(String msg);
+    String greet(String msg);
 }
