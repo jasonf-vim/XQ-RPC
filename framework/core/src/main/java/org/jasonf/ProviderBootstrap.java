@@ -1,10 +1,19 @@
 package org.jasonf;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 import org.jasonf.boot.Bootstrap;
 import org.jasonf.config.ProvideConfig;
 
-import java.util.HashMap;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author jasonf
@@ -12,8 +21,11 @@ import java.util.Map;
  * @Description
  */
 
+@Slf4j
 public class ProviderBootstrap extends Bootstrap {
-    private final Map<String, ProvideConfig<?>> SERVICES = new HashMap<>();
+    public static final Map<String, ProvideConfig<?>> SERVICES = new ConcurrentHashMap<>();
+
+    private int port = 8102;
 
     private ProviderBootstrap() {
     }
@@ -39,10 +51,35 @@ public class ProviderBootstrap extends Bootstrap {
 
     @Override
     public void start() {
+        EventLoopGroup boss = new NioEventLoopGroup(2);
+        EventLoopGroup worker = new NioEventLoopGroup(10);
         try {
-            Thread.sleep(60000);   // 60 sec
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            bootstrap.group(boss, worker)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                            socketChannel.pipeline().addLast(new SimpleChannelInboundHandler<ByteBuf>() {
+                                @Override
+                                protected void channelRead0(ChannelHandlerContext context, ByteBuf msg) throws Exception {
+                                    log.info("receive msg: [{}]", msg.toString(Charset.defaultCharset()));
+                                    context.channel().writeAndFlush(Unpooled.copiedBuffer("I'm provider".getBytes(Charset.defaultCharset())));
+                                }
+                            });
+                        }
+                    });
+            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                boss.shutdownGracefully().sync();
+                worker.shutdownGracefully().sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

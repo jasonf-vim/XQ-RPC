@@ -1,7 +1,13 @@
 package org.jasonf;
 
+import io.netty.channel.Channel;
 import org.jasonf.boot.Bootstrap;
 import org.jasonf.config.InvokeConfig;
+
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author jasonf
@@ -10,6 +16,10 @@ import org.jasonf.config.InvokeConfig;
  */
 
 public class InvokerBootstrap extends Bootstrap {
+    public static final Map<InetSocketAddress, Channel> CHANNEL_CACHE = new ConcurrentHashMap<>();
+
+    public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>(64);
+
     private InvokerBootstrap() {
     }
 

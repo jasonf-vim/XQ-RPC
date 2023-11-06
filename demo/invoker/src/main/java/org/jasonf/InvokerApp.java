@@ -26,6 +26,6 @@ public class InvokerApp {
         // 4、发送请求（节点坐标、接口名、形参列表、实参列表）
         // 5、接收结果并返回
         Hello hello = helloConf.get();
-        hello.greet("XQ");
+        System.out.println(hello.greet("XQ"));
     }
 }
