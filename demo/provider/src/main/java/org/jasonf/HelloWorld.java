@@ -8,7 +8,7 @@ package org.jasonf;
 
 public class HelloWorld implements Hello {
     @Override
-    public void greet(String msg) {
-        System.out.println("hello " + msg);
+    public String greet(String msg) {
+        return "Hello " + msg + "!";
     }
 }
