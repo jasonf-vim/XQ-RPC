@@ -14,15 +14,18 @@ import java.lang.reflect.Method;
  * @Description
  */
 
-public class MethodInvokeHandler extends SimpleChannelInboundHandler<Message> {
+public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
         Request request = (Request) msg.getPayload();
-        // 通过反射调用方法并获取返回值
-        Object obj = ProviderBootstrap.SERVICES.get(request.getIface()).getImpl();
-        Method method = obj.getClass().getDeclaredMethod(request.getMethod(), request.getParamType());
-        Object rtn = method.invoke(obj, request.getParamValue());
-        ctx.channel().writeAndFlush(rtn);
+        if (request != null) {
+            // 通过反射调用方法并获取返回值
+            Object obj = ProviderBootstrap.SERVICES.get(request.getIface()).getImpl();
+            Method method = obj.getClass().getDeclaredMethod(request.getMethod(), request.getParamType());
+            Object rtn = method.invoke(obj, request.getParamValue());
+            msg.setPayload(rtn);
+        }
+        ctx.channel().writeAndFlush(msg);
     }
 }

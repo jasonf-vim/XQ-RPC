@@ -3,8 +3,7 @@ package org.jasonf.channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LoggingHandler;
-import org.jasonf.channel.handler.MySimpleChannelInboundHandler;
-import org.jasonf.channel.handler.RequestEncoder;
+import org.jasonf.channel.handler.*;
 
 /**
  * @Author jasonf
@@ -17,7 +16,10 @@ public class InvokerChannelInitializer extends ChannelInitializer<SocketChannel>
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
                 .addLast(new LoggingHandler())
-                .addLast(new RequestEncoder())
-                .addLast(new MySimpleChannelInboundHandler());
+                .addLast(new Decoder())
+                .addLast(new Encoder())
+                .addLast(new CompressCodec())
+                .addLast(new SerializeCodec())
+                .addLast(new ReturnValueHandler());
     }
 }

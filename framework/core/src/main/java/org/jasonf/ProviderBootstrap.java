@@ -10,8 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.boot.Bootstrap;
-import org.jasonf.channel.handler.MethodInvokeHandler;
-import org.jasonf.channel.handler.RequestDecoder;
+import org.jasonf.channel.handler.*;
 import org.jasonf.config.ProvideConfig;
 
 import java.util.Map;
@@ -64,8 +63,11 @@ public class ProviderBootstrap extends Bootstrap {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline()
                                     .addLast(new LoggingHandler())
-                                    .addLast(new RequestDecoder())
-                                    .addLast(new MethodInvokeHandler());
+                                    .addLast(new Decoder())
+                                    .addLast(new Encoder())
+                                    .addLast(new CompressCodec())
+                                    .addLast(new SerializeCodec())
+                                    .addLast(new MethodCallHandler());
                         }
                     });
             ChannelFuture channelFuture = bootstrap.bind(port).sync();
