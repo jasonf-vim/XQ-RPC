@@ -55,7 +55,7 @@ public class RPCInvocationHandler implements InvocationHandler {
                 .paramValue(args)
                 .build();
         Message message = Message.builder()
-                .ID(1L)
+                .ID(InvokerBootstrap.ID_GENERATOR.getUniqueID())
                 .messageType((byte) 1)
                 .serialType((byte) 1)
                 .compressType((byte) 1)
