@@ -11,13 +11,15 @@ import lombok.Getter;
 @Getter
 public enum MessageType {
     REQUEST((byte) 1, "请求"),
-    HEART_BEAT((byte) 0, "心跳检测");
+    HEART_BEAT((byte) 0, "心跳检测"),
+    RESPONSE_SUCCESS((byte) -1, "响应（成功）"),
+    RESPONSE_FAILURE((byte) -128, "响应（失败）");
 
-    private byte id;
+    private byte code;
     private String desc;
 
-    MessageType(byte id, String desc) {
-        this.id = id;
+    MessageType(byte code, String desc) {
+        this.code = code;
         this.desc = desc;
     }
 }

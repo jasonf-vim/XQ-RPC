@@ -21,7 +21,7 @@ import java.util.List;
 public class SerializeCodec extends MessageToMessageCodec<Message, Message> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
+        if (msg.getMessageType() != MessageType.HEART_BEAT.getCode()) {
             Object payload = msg.getPayload();
             try (ByteArrayOutputStream bao = new ByteArrayOutputStream();
                  ObjectOutputStream oos = new ObjectOutputStream(bao)) {
@@ -38,7 +38,7 @@ public class SerializeCodec extends MessageToMessageCodec<Message, Message> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
+        if (msg.getMessageType() != MessageType.HEART_BEAT.getCode()) {
             byte[] payload = (byte[]) msg.getPayload();
             try (ByteArrayInputStream bai = new ByteArrayInputStream(payload);
                  ObjectInputStream ois = new ObjectInputStream(bai)) {

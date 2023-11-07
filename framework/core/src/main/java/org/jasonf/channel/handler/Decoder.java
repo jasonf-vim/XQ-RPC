@@ -62,7 +62,7 @@ public class Decoder extends LengthFieldBasedFrameDecoder {
         message.setCompressType(byteBuf.readByte());
         message.setID(byteBuf.readLong());
         // 心跳检测可直接返回
-        if (msgType == MessageType.HEART_BEAT.getId()) return message;
+        if (msgType == MessageType.HEART_BEAT.getCode()) return message;
 
         byte[] payload = new byte[fullLength - headerLength];
         byteBuf.readBytes(payload);

@@ -25,7 +25,7 @@ import java.util.zip.GZIPOutputStream;
 public class CompressCodec extends MessageToMessageCodec<Message, Message> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
+        if (msg.getMessageType() != MessageType.HEART_BEAT.getCode()) {
             byte[] payload = (byte[]) msg.getPayload();
             try (ByteArrayOutputStream bao = new ByteArrayOutputStream();
                  GZIPOutputStream gzip = new GZIPOutputStream(bao)) {
@@ -42,7 +42,7 @@ public class CompressCodec extends MessageToMessageCodec<Message, Message> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
+        if (msg.getMessageType() != MessageType.HEART_BEAT.getCode()) {
             byte[] payload = (byte[]) msg.getPayload();
             try (ByteArrayOutputStream bao = new ByteArrayOutputStream();
                  ByteArrayInputStream bai = new ByteArrayInputStream(payload);
