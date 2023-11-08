@@ -14,6 +14,8 @@ public class Constant {
 
     public static final int VERSION = 1;    // 版本号
 
+    public static final int BUFFER_SIZE = 128;
+
     // 私有协议各个头部字段的长度
     public static final int MAGIC_FIELD_LENGTH = 4;
     public static final int VERSION_FIELD_LENGTH = 1;

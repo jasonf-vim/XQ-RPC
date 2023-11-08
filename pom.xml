@@ -25,6 +25,7 @@
         <junit.version>4.13.2</junit.version>
         <zookeeper.version>3.8.3</zookeeper.version>
         <netty.version>4.1.89.Final</netty.version>
+        <hessian.version>4.0.38</hessian.version>
     </properties>
 
     <dependencyManagement>
@@ -69,6 +70,11 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
