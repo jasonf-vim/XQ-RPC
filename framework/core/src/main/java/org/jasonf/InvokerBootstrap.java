@@ -20,6 +20,8 @@ public class InvokerBootstrap extends Bootstrap {
 
     public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>(64);
 
+    public static final IDGenerator ID_GENERATOR = new IDGenerator(Constant.DATA_CENTER_ID, Constant.MACHINE_ID);
+
     private InvokerBootstrap() {
     }
 

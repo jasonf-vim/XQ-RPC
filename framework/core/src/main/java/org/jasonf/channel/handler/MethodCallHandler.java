@@ -3,6 +3,7 @@ package org.jasonf.channel.handler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.jasonf.ProviderBootstrap;
+import org.jasonf.transfer.enumeration.MessageType;
 import org.jasonf.transfer.message.Message;
 import org.jasonf.transfer.message.Request;
 
@@ -25,7 +26,8 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
             Method method = obj.getClass().getDeclaredMethod(request.getMethod(), request.getParamType());
             Object rtn = method.invoke(obj, request.getParamValue());
             msg.setPayload(rtn);
-        }
+            msg.setMessageType(MessageType.RESPONSE_SUCCESS.getCode());
+        }   // 心跳检测不必改变消息类型
         ctx.channel().writeAndFlush(msg);
     }
 }

@@ -5,6 +5,9 @@ import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.InvokerBootstrap;
 import org.jasonf.exception.NetworkException;
+import org.jasonf.transfer.enumeration.CompressorType;
+import org.jasonf.transfer.enumeration.MessageType;
+import org.jasonf.transfer.enumeration.SerializeType;
 import org.jasonf.transfer.message.Message;
 import org.jasonf.transfer.message.Request;
 import org.jasonf.netty.BootstrapHolder;
@@ -55,10 +58,10 @@ public class RPCInvocationHandler implements InvocationHandler {
                 .paramValue(args)
                 .build();
         Message message = Message.builder()
-                .ID(1L)
-                .messageType((byte) 1)
-                .serialType((byte) 1)
-                .compressType((byte) 1)
+                .ID(InvokerBootstrap.ID_GENERATOR.getUniqueID())
+                .messageType(MessageType.REQUEST.getCode())
+                .serialType(SerializeType.HESSIAN.getCode())
+                .compressType(CompressorType.GZIP.getCode())
                 .payload(request)
                 .build();
 

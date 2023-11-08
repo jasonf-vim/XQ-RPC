@@ -2,14 +2,17 @@ package org.jasonf.channel.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-import lombok.extern.slf4j.Slf4j;
 import org.jasonf.exception.MessageDecodeException;
 import org.jasonf.exception.MessageEncodeException;
-import org.jasonf.transfer.enumeration.MessageType;
+import org.jasonf.serialize.Serializer;
+import org.jasonf.serialize.impl.HessianSerializer;
+import org.jasonf.serialize.impl.JDKSerializer;
+import org.jasonf.transfer.enumeration.SerializeType;
 import org.jasonf.transfer.message.Message;
 
-import java.io.*;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author jasonf
@@ -17,37 +20,27 @@ import java.util.List;
  * @Description
  */
 
-@Slf4j
 public class SerializeCodec extends MessageToMessageCodec<Message, Message> {
+    private static final Map<Byte, Serializer> SERIALIZER_CACHE = new ConcurrentHashMap<>();
+
+    static {
+        SERIALIZER_CACHE.put(SerializeType.JDK.getCode(), JDKSerializer.getInstance());
+        SERIALIZER_CACHE.put(SerializeType.HESSIAN.getCode(), HessianSerializer.getInstance());
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
-            Object payload = msg.getPayload();
-            try (ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                 ObjectOutputStream oos = new ObjectOutputStream(bao)) {
-                oos.writeObject(payload);
-                oos.flush();
-                msg.setPayload(bao.toByteArray());
-            } catch (IOException ex) {
-                log.error("序列化请求 [{}] 时发生异常", msg.getID());
-                throw new MessageEncodeException(ex);
-            }
-        }   // 心跳检测不需要序列化
+        Serializer serializer = SERIALIZER_CACHE.get(msg.getSerialType());
+        if (serializer == null) throw new MessageEncodeException("获取序列化器 " + msg.getSerialType() + "失败");
+        msg.setPayload(serializer.serialize(msg.getPayload(), msg.getID()));
         out.add(msg);
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Message msg, List<Object> out) throws Exception {
-        if (msg.getMessageType() != MessageType.HEART_BEAT.getId()) {
-            byte[] payload = (byte[]) msg.getPayload();
-            try (ByteArrayInputStream bai = new ByteArrayInputStream(payload);
-                 ObjectInputStream ois = new ObjectInputStream(bai)) {
-                msg.setPayload(ois.readObject());
-            } catch (IOException | ClassNotFoundException ex) {
-                log.error("反序列化请求 [{}] 时发生异常", msg.getID());
-                throw new MessageDecodeException(ex);
-            }
-        }   // 心跳检测不需要反序列化
+        Serializer serializer = SERIALIZER_CACHE.get(msg.getSerialType());
+        if (serializer == null) throw new MessageDecodeException("获取反序列化器 " + msg.getSerialType() + "失败");
+        msg.setPayload(serializer.deserialize((byte[]) msg.getPayload(), msg.getID()));
         out.add(msg);
     }
 }
