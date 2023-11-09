@@ -1,7 +1,7 @@
 package org.jasonf.boot;
 
-import org.jasonf.config.InvokeConfig;
 import org.jasonf.exception.InvocationNotSupportedException;
+import org.jasonf.loadbalance.AbstractLoadBalancer;
 
 /**
  * @Author jasonf
@@ -10,7 +10,7 @@ import org.jasonf.exception.InvocationNotSupportedException;
  */
 
 public interface Invoke {
-    default void retrieval(InvokeConfig<?> config) {
+    default void loadBalancer(AbstractLoadBalancer loadBalancer) {
         throw new InvocationNotSupportedException("当前方法调用不受支持");
     }
 }

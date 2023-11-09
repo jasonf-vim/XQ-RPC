@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooKeeper;
 import org.jasonf.Constant;
+import org.jasonf.ProviderBootstrap;
 import org.jasonf.exception.ServiceNotFoundException;
 import org.jasonf.registry.Registry;
 import org.jasonf.util.NetworkUtil;
@@ -34,7 +35,7 @@ public class ZooKeeperRegistry implements Registry {
         if (!ZooKeeperUtil.exists(zooKeeper, servPath))
             ZooKeeperUtil.create(zooKeeper, servPath, CreateMode.PERSISTENT);   // 持久节点
         // 创建本机节点（'公网/局域网ip':'端口号'）
-        String hostPath = servPath + "/" + NetworkUtil.getIPAddr() + ":" + 8102;    // todo 全局配置对外服务暴露端口
+        String hostPath = servPath + "/" + NetworkUtil.getIPAddr() + ":" + ProviderBootstrap.PORT;    // todo 全局配置对外服务暴露端口
         if (!ZooKeeperUtil.exists(zooKeeper, hostPath))
             ZooKeeperUtil.create(zooKeeper, hostPath, CreateMode.EPHEMERAL);    // 临时节点
         if (log.isDebugEnabled()) {

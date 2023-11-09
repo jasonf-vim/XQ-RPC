@@ -2,7 +2,7 @@ package org.jasonf;
 
 import io.netty.channel.Channel;
 import org.jasonf.boot.Bootstrap;
-import org.jasonf.config.InvokeConfig;
+import org.jasonf.loadbalance.AbstractLoadBalancer;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -22,6 +22,10 @@ public class InvokerBootstrap extends Bootstrap {
 
     public static final IDGenerator ID_GENERATOR = new IDGenerator(Constant.DATA_CENTER_ID, Constant.MACHINE_ID);
 
+    public static final ThreadLocal<Long> MESSAGE_ID_THREAD_LOCAL = new ThreadLocal<>();
+
+    public static AbstractLoadBalancer loadBalancer;
+
     private InvokerBootstrap() {
     }
 
@@ -37,7 +41,8 @@ public class InvokerBootstrap extends Bootstrap {
     }
 
     @Override
-    public void retrieval(InvokeConfig<?> config) {
-        config.setRegistry(registry);
+    public void loadBalancer(AbstractLoadBalancer loadBalancer) {
+        loadBalancer.setRegistry(registry);
+        InvokerBootstrap.loadBalancer = loadBalancer;
     }
 }

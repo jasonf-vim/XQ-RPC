@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProviderBootstrap extends Bootstrap {
     public static final Map<String, ProvideConfig<?>> SERVICES = new ConcurrentHashMap<>();
 
-    private int port = 8102;
+    public static final int PORT = 8102;
 
     private ProviderBootstrap() {
     }
@@ -70,7 +70,7 @@ public class ProviderBootstrap extends Bootstrap {
                                     .addLast(new MethodCallHandler());
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(PORT).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
