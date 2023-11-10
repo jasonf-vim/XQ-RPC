@@ -26,6 +26,8 @@ public class InvokerBootstrap extends Bootstrap {
 
     public static AbstractLoadBalancer loadBalancer;
 
+    public static final Map<InetSocketAddress, Long> RESPONSE_TIME = new ConcurrentHashMap<>(128);
+
     private InvokerBootstrap() {
     }
 

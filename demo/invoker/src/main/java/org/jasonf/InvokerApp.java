@@ -2,6 +2,7 @@ package org.jasonf;
 
 import org.jasonf.config.InvokeConfig;
 import org.jasonf.config.RegistryConfig;
+import org.jasonf.heartbeat.HeartbeatDetector;
 import org.jasonf.loadbalance.AbstractLoadBalancer;
 import org.jasonf.loadbalance.impl.ConsistentHashLoadBalancer;
 
@@ -20,6 +21,8 @@ public class InvokerApp {
                 .application("XQ-invoker")
                 .registry(registryConfig)
                 .loadBalancer(loadBalancer);
+
+        HeartbeatDetector.start();    // 开启心跳检测
 
         InvokeConfig<Hello> helloConf = new InvokeConfig<>(Hello.class);
         Hello hello = helloConf.get();  // 获取代理对象

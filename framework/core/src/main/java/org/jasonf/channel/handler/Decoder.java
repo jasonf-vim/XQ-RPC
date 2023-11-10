@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.exception.MessageDecodeException;
-import org.jasonf.transfer.enumeration.MessageType;
 import org.jasonf.transfer.message.Message;
 
 import static org.jasonf.transfer.Constant.*;
@@ -61,8 +60,8 @@ public class Decoder extends LengthFieldBasedFrameDecoder {
         message.setSerialType(byteBuf.readByte());
         message.setCompressType(byteBuf.readByte());
         message.setID(byteBuf.readLong());
-        // 心跳检测可直接返回
-        if (msgType == MessageType.HEART_BEAT.getCode()) return message;
+        // 心跳检测或者方法调用结果为null直接返回
+        if (fullLength == headerLength) return message;
 
         byte[] payload = new byte[fullLength - headerLength];
         byteBuf.readBytes(payload);
