@@ -32,4 +32,9 @@ public class Constant {
             COMPRESS_TYPE_FIELD_LENGTH + MESSAGE_ID_FIELD_LENGTH;
 
     public static final int MAX_FRAME_LENGTH = 1024 * 1024;     // 最大帧长度 1MB
+
+    public static final long INTERVAL = 3L;    // 心跳检测的间隔时间
+    public static final int RETRY = 3;    // 心跳检测最多尝试次数
+    public static final long TIMEOUT = 200L;    // 心跳检测最长等待时间
+    public static final int WAIT_TIME = 51;     // 心跳检测重试最长等待时间
 }

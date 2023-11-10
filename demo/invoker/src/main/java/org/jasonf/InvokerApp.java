@@ -2,6 +2,9 @@ package org.jasonf;
 
 import org.jasonf.config.InvokeConfig;
 import org.jasonf.config.RegistryConfig;
+import org.jasonf.heartbeat.HeartbeatDetector;
+import org.jasonf.loadbalance.AbstractLoadBalancer;
+import org.jasonf.loadbalance.impl.MinResponseTimeLoadBalancer;
 
 /**
  * @Author jasonf
@@ -12,20 +15,25 @@ import org.jasonf.config.RegistryConfig;
 public class InvokerApp {
     public static void main(String[] args) {
         RegistryConfig registryConfig = new RegistryConfig("zookeeper://123.60.86.242:2181");
-        InvokeConfig<Hello> helloConf = new InvokeConfig<>(Hello.class);
+        AbstractLoadBalancer loadBalancer = new MinResponseTimeLoadBalancer();
 
         InvokerBootstrap.getInstance()
                 .application("XQ-invoker")
                 .registry(registryConfig)
-                .retrieval(helloConf);
+                .activateWatcher()
+                .loadBalancer(loadBalancer);
 
-        // 获取代理对象:
-        // 1、连接注册中心
-        // 2、拉取服务列表
-        // 3、选择服务节点并建立连接
-        // 4、发送请求（接口名、形参列表、实参列表）
-        // 5、接收结果并返回
-        Hello hello = helloConf.get();
-        System.out.println(hello.greet("XQ"));
+        HeartbeatDetector.start();    // 开启心跳检测
+
+        InvokeConfig<Hello> helloConf = new InvokeConfig<>(Hello.class);
+        Hello hello = helloConf.get();  // 获取代理对象
+        for (int i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            System.out.println(hello.greet("XQ"));
+        }
     }
 }

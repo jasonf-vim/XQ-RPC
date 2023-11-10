@@ -8,6 +8,7 @@ import org.jasonf.transfer.message.Message;
 import org.jasonf.transfer.message.Request;
 
 import java.lang.reflect.Method;
+import java.util.Random;
 
 /**
  * @Author jasonf
@@ -16,6 +17,7 @@ import java.lang.reflect.Method;
  */
 
 public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
+    private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
@@ -26,8 +28,10 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
             Method method = obj.getClass().getDeclaredMethod(request.getMethod(), request.getParamType());
             Object rtn = method.invoke(obj, request.getParamValue());
             msg.setPayload(rtn);
-            msg.setMessageType(MessageType.RESPONSE_SUCCESS.getCode());
-        }   // 心跳检测不必改变消息类型
+        } else {
+            Thread.sleep(25 + RANDOM.nextInt(56)); // 模拟心跳检测时不同节点的响应时间(25 ~ 80ms)
+        }
+        msg.setMessageType(MessageType.RESPONSE_SUCCESS.getCode());
         ctx.channel().writeAndFlush(msg);
     }
 }

@@ -33,11 +33,11 @@ public class Encoder extends MessageToByteEncoder<Message> {
         byteBuf.writeByte(VERSION);
         byteBuf.writeShort(HEADER_LENGTH);
         byte[] payload = (byte[]) message.getPayload();     // 序列化、压缩后的有效载荷
-        byteBuf.writeInt(HEADER_LENGTH + payload.length);
+        byteBuf.writeInt(HEADER_LENGTH + (payload == null ? 0 : payload.length));
         byteBuf.writeByte(message.getMessageType());
         byteBuf.writeByte(message.getSerialType());
         byteBuf.writeByte(message.getCompressType());
         byteBuf.writeLong(message.getID());
-        byteBuf.writeBytes(payload);
+        if (payload != null) byteBuf.writeBytes(payload);
     }
 }
