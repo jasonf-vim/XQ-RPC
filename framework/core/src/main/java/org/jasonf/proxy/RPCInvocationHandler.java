@@ -88,7 +88,7 @@ public class RPCInvocationHandler implements InvocationHandler {
                 channel = channelFuture.get(3, TimeUnit.SECONDS);   // 阻塞等待
                 InvokerBootstrap.CHANNEL_CACHE.put(address, channel);  // 缓存 channel
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                throw new NetworkException("获取 [{}] 的 channel 时发生异常");
+                throw new NetworkException("获取 " + address + " 的 channel 时发生异常");
             }
         }
         return channel;

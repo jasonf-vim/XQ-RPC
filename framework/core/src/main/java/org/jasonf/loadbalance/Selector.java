@@ -15,9 +15,4 @@ public interface Selector {
      * @return 提供服务的节点地址
      */
     InetSocketAddress select();
-
-    /**
-     * 动态负载均衡
-     */
-    void reBalance();
 }

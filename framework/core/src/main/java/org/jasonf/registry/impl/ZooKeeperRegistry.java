@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooKeeper;
 import org.jasonf.Constant;
+import org.jasonf.InvokerBootstrap;
 import org.jasonf.ProviderBootstrap;
 import org.jasonf.exception.ServiceNotFoundException;
 import org.jasonf.registry.Registry;
@@ -46,7 +47,9 @@ public class ZooKeeperRegistry implements Registry {
     @Override
     public List<InetSocketAddress> detect(String iface) {
         // 拉取可提供服务的节点位置信息
-        List<String> addresses = ZooKeeperUtil.getChildren(zooKeeper, Constant.PROVIDERS_ROOT_PATH + "/" + iface);
+        List<String> addresses = ZooKeeperUtil.getChildren(zooKeeper,
+                Constant.PROVIDERS_ROOT_PATH + "/" + iface,
+                InvokerBootstrap.SERVICE_MUTATION);
         // 封装 ip 和 port
         List<InetSocketAddress> nodes = addresses.stream().map(address -> {
             String[] factor = address.split(":");

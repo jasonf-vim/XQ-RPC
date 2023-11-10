@@ -75,10 +75,5 @@ public class ConsistentHashLoadBalancer extends AbstractLoadBalancer {
             }
             return address;
         }
-
-        @Override
-        public void reBalance() {
-
-        }
     }
 }

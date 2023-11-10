@@ -29,5 +29,10 @@ public abstract class AbstractLoadBalancer implements LoadBalancer {
         return selector.select();
     }
 
+    @Override
+    public void reLoadBalance(String iface, List<InetSocketAddress> addresses) {
+        SERVICE_CACHE.put(iface, getSelector(addresses));    // 更新服务列表
+    }
+
     protected abstract Selector getSelector(List<InetSocketAddress> addressList);
 }

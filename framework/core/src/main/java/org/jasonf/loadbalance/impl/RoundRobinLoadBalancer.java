@@ -35,10 +35,5 @@ public class RoundRobinLoadBalancer extends AbstractLoadBalancer {
             else cursor.incrementAndGet();
             return addressList.get(cursor.get());
         }
-
-        @Override
-        public void reBalance() {
-
-        }
     }
 }

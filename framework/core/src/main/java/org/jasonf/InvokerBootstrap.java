@@ -3,6 +3,7 @@ package org.jasonf;
 import io.netty.channel.Channel;
 import org.jasonf.boot.Bootstrap;
 import org.jasonf.loadbalance.AbstractLoadBalancer;
+import org.jasonf.watcher.ServiceMutation;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class InvokerBootstrap extends Bootstrap {
 
     public static final Map<InetSocketAddress, Long> RESPONSE_TIME = new ConcurrentHashMap<>(128);
 
+    public static final ServiceMutation SERVICE_MUTATION = new ServiceMutation();
+
     private InvokerBootstrap() {
     }
 
@@ -40,6 +43,12 @@ public class InvokerBootstrap extends Bootstrap {
             }
         }
         return bootstrap;
+    }
+
+    @Override
+    public Bootstrap activateWatcher() {
+        SERVICE_MUTATION.setRegistry(registry);
+        return this;
     }
 
     @Override

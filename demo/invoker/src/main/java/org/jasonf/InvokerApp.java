@@ -20,6 +20,7 @@ public class InvokerApp {
         InvokerBootstrap.getInstance()
                 .application("XQ-invoker")
                 .registry(registryConfig)
+                .activateWatcher()
                 .loadBalancer(loadBalancer);
 
         HeartbeatDetector.start();    // 开启心跳检测
