@@ -3,6 +3,7 @@ package org.jasonf.loadbalance.impl;
 import org.jasonf.InvokerBootstrap;
 import org.jasonf.loadbalance.AbstractLoadBalancer;
 import org.jasonf.loadbalance.Selector;
+import org.jasonf.registry.Registry;
 
 import java.net.InetSocketAddress;
 import java.security.MessageDigest;
@@ -16,6 +17,10 @@ import java.util.*;
  */
 
 public class ConsistentHashLoadBalancer extends AbstractLoadBalancer {
+    public ConsistentHashLoadBalancer(Registry registry) {
+        super(registry);
+    }
+
     @Override
     protected Selector getSelector(List<InetSocketAddress> addressList) {
         return new ConsistentHashSelector(addressList, 128);

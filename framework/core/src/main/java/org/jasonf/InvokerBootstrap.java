@@ -2,8 +2,8 @@ package org.jasonf;
 
 import io.netty.channel.Channel;
 import org.jasonf.boot.Bootstrap;
+import org.jasonf.heartbeat.HeartbeatDetector;
 import org.jasonf.loadbalance.AbstractLoadBalancer;
-import org.jasonf.watcher.ServiceMutation;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -21,15 +21,9 @@ public class InvokerBootstrap extends Bootstrap {
 
     public static final Map<Long, CompletableFuture<Object>> PENDING_REQUEST = new ConcurrentHashMap<>(64);
 
-    public static final IDGenerator ID_GENERATOR = new IDGenerator(Constant.DATA_CENTER_ID, Constant.MACHINE_ID);
-
-    public static final ThreadLocal<Long> MESSAGE_ID_THREAD_LOCAL = new ThreadLocal<>();
-
-    public static AbstractLoadBalancer loadBalancer;
-
     public static final Map<InetSocketAddress, Long> RESPONSE_TIME = new ConcurrentHashMap<>(128);
 
-    public static final ServiceMutation SERVICE_MUTATION = new ServiceMutation();
+    public static final ThreadLocal<Long> MESSAGE_ID_THREAD_LOCAL = new ThreadLocal<>();
 
     private InvokerBootstrap() {
     }
@@ -46,14 +40,13 @@ public class InvokerBootstrap extends Bootstrap {
     }
 
     @Override
-    public Bootstrap activateWatcher() {
-        SERVICE_MUTATION.setRegistry(registry);
+    public Bootstrap loadBalancer(AbstractLoadBalancer loadBalancer) {
+        config.setLoadBalancer(loadBalancer);
         return this;
     }
 
     @Override
-    public void loadBalancer(AbstractLoadBalancer loadBalancer) {
-        loadBalancer.setRegistry(registry);
-        InvokerBootstrap.loadBalancer = loadBalancer;
+    public void start() {
+        HeartbeatDetector.start();    // 开启心跳检测
     }
 }

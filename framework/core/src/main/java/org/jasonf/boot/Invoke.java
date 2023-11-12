@@ -10,11 +10,7 @@ import org.jasonf.loadbalance.AbstractLoadBalancer;
  */
 
 public interface Invoke {
-    default Bootstrap activateWatcher() {
-        throw new InvocationNotSupportedException("当前方法调用不受支持");
-    }
-
-    default void loadBalancer(AbstractLoadBalancer loadBalancer) {
+    default Bootstrap loadBalancer(AbstractLoadBalancer loadBalancer) {
         throw new InvocationNotSupportedException("当前方法调用不受支持");
     }
 }

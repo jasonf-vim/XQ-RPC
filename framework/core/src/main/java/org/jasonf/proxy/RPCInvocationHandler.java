@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasonf.InvokerBootstrap;
 import org.jasonf.exception.NetworkException;
 import org.jasonf.netty.BootstrapHolder;
-import org.jasonf.transfer.enumeration.CompressorType;
 import org.jasonf.transfer.enumeration.MessageType;
-import org.jasonf.transfer.enumeration.SerializeType;
 import org.jasonf.transfer.message.Message;
 import org.jasonf.transfer.message.Request;
 
@@ -42,21 +40,21 @@ public class RPCInvocationHandler implements InvocationHandler {
                 .paramValue(args)
                 .build();
         Message message = Message.builder()
-                .ID(InvokerBootstrap.ID_GENERATOR.getUniqueID())
+                .ID(InvokerBootstrap.getInstance().getConfig().getIdGenerator().getUniqueID())
                 .messageType(MessageType.REQUEST.getCode())
-                .serialType(SerializeType.HESSIAN.getCode())
-                .compressType(CompressorType.GZIP.getCode())
+                .serialType(InvokerBootstrap.getInstance().getConfig().getSerialize().getCode())
+                .compressType(InvokerBootstrap.getInstance().getConfig().getCompress().getCode())
                 .payload(request)
                 .build();
 
         InvokerBootstrap.MESSAGE_ID_THREAD_LOCAL.set(message.getID());
 
         // 2、从负载均衡器获取服务节点
-        InetSocketAddress serviceAddress = InvokerBootstrap.loadBalancer.getServiceAddress(iface);
+        InetSocketAddress serviceAddress = InvokerBootstrap.getInstance().getConfig().getLoadBalancer().getServiceAddress(iface);
         if (log.isDebugEnabled()) {
             log.debug("node{ip: {}, port: {}}", serviceAddress.getHostString(), serviceAddress.getPort());
         }
-        // todo 本地缓存服务列表，并添加watcher及时维护
+
         Channel channel = getAvailableChannel(serviceAddress);    // 3、与服务节点建立连接
 
         // 4、发送请求数据

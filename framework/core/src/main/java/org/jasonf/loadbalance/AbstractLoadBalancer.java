@@ -19,6 +19,10 @@ public abstract class AbstractLoadBalancer implements LoadBalancer {
     private final Map<String, Selector> SERVICE_CACHE = new ConcurrentHashMap<>(128);
     private Registry registry;
 
+    public AbstractLoadBalancer(Registry registry) {
+        this.registry = registry;
+    }
+
     @Override
     public InetSocketAddress getServiceAddress(String iface) {
         Selector selector = SERVICE_CACHE.get(iface);

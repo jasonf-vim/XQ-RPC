@@ -2,6 +2,7 @@ package org.jasonf.loadbalance.impl;
 
 import org.jasonf.loadbalance.AbstractLoadBalancer;
 import org.jasonf.loadbalance.Selector;
+import org.jasonf.registry.Registry;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -14,6 +15,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public class RoundRobinLoadBalancer extends AbstractLoadBalancer {
+    public RoundRobinLoadBalancer(Registry registry) {
+        super(registry);
+    }
+
     @Override
     protected Selector getSelector(List<InetSocketAddress> addressList) {
         return new RoundRobinSelector(addressList);

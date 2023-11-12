@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!ELEMENT configuration ANY>
+
+        <!ELEMENT app ANY>
+
+        <!ELEMENT port ANY>
+
+        <!ELEMENT registry EMPTY>
+        <!ATTLIST registry
+                url CDATA #REQUIRED
+                >
+
+        <!ELEMENT serialize EMPTY>
+        <!ATTLIST serialize
+                type CDATA #REQUIRED
+                >
+
+        <!ELEMENT compress EMPTY>
+        <!ATTLIST compress
+                type CDATA #REQUIRED
+                >
+
+        <!ELEMENT id-generator EMPTY>
+        <!ATTLIST id-generator
+                class CDATA #REQUIRED
+                room CDATA #REQUIRED
+                server CDATA #REQUIRED
+                >
+
+        <!ELEMENT load-balancer EMPTY>
+        <!ATTLIST load-balancer
+                class CDATA #REQUIRED
+                >

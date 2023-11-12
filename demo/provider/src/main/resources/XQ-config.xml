@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration SYSTEM "http://jasonf.org/XQ-config.dtd">
+<configuration>
+    <!-- 应用名 -->
+    <app>XQ-Provider</app>
+
+    <!-- 服务暴露接口 -->
+    <port>8102</port>
+
+    <!-- 注册中心 -->
+    <registry url="zookeeper://123.60.86.242:2181"/>
+
+</configuration>

@@ -1,7 +1,6 @@
 package org.jasonf.watcher;
 
 import io.netty.channel.Channel;
-import lombok.Setter;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.jasonf.InvokerBootstrap;
@@ -17,9 +16,12 @@ import java.util.Map;
  * @Description
  */
 
-@Setter
 public class ServiceMutation implements Watcher {
-    private Registry registry;
+    private static volatile ServiceMutation serviceMutation;
+    private Registry registry = InvokerBootstrap.getInstance().getConfig().getRegistry();
+
+    private ServiceMutation() {
+    }
 
     @Override
     public void process(WatchedEvent event) {
@@ -38,7 +40,18 @@ public class ServiceMutation implements Watcher {
             }
 
             // 配合负载均衡感知服务上下线
-            InvokerBootstrap.loadBalancer.reLoadBalance(iface, serviceList);
+            InvokerBootstrap.getInstance().getConfig().getLoadBalancer().reLoadBalance(iface, serviceList);
         }
+    }
+
+    public static ServiceMutation getInstance() {
+        if (serviceMutation == null) {
+            synchronized (ServiceMutation.class) {
+                if (serviceMutation == null) {
+                    serviceMutation = new ServiceMutation();
+                }
+            }
+        }
+        return serviceMutation;
     }
 }

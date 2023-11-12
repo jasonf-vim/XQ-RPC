@@ -4,10 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.InvokerBootstrap;
-
-import org.jasonf.transfer.enumeration.CompressorType;
 import org.jasonf.transfer.enumeration.MessageType;
-import org.jasonf.transfer.enumeration.SerializeType;
 import org.jasonf.transfer.message.Message;
 
 import java.net.InetSocketAddress;
@@ -48,8 +45,8 @@ public class HeartbeatDetector {
         Map.Entry<InetSocketAddress, Channel> entry;
         Message msg = Message.builder()
                 .messageType(MessageType.HEART_BEAT.getCode())
-                .serialType(SerializeType.HESSIAN.getCode())
-                .compressType(CompressorType.GZIP.getCode())
+                .serialType(InvokerBootstrap.getInstance().getConfig().getSerialize().getCode())
+                .compressType(InvokerBootstrap.getInstance().getConfig().getCompress().getCode())
                 .build();
 
         public Measure(Map.Entry<InetSocketAddress, Channel> entry) {
@@ -83,7 +80,7 @@ public class HeartbeatDetector {
         }
 
         public long probe(Channel channel) {
-            msg.setID(InvokerBootstrap.ID_GENERATOR.getUniqueID());    // 重置消息ID
+            msg.setID(InvokerBootstrap.getInstance().getConfig().getIdGenerator().getUniqueID());    // 重置消息ID
             CompletableFuture<Object> resultFuture = new CompletableFuture<>();
             long start = System.currentTimeMillis(), end;
             channel.writeAndFlush(msg).addListener((ChannelFutureListener) promise -> {

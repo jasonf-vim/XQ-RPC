@@ -1,7 +1,6 @@
 package org.jasonf.boot;
 
 import org.jasonf.config.RegistryConfig;
-import org.jasonf.registry.Registry;
 
 /**
  * @Author jasonf
@@ -9,22 +8,27 @@ import org.jasonf.registry.Registry;
  * @Description
  */
 
-public class Bootstrap implements Provide, Invoke {
+public abstract class Bootstrap implements Provide, Invoke {
     protected static volatile Bootstrap bootstrap;
 
-    protected String appName = "XQ";
-    protected Registry registry;
+    protected Configuration config = new Configuration();
 
     protected Bootstrap() {
     }
 
+    public Configuration getConfig() {
+        return config;
+    }
+
     public Bootstrap application(String appName) {
-        this.appName = appName;
+        config.setAppName(appName);
         return this;
     }
 
     public Bootstrap registry(RegistryConfig config) {
-        registry = config.getRegistry();
+        this.config.setRegistry(config.getRegistry());
         return this;
     }
+
+    public abstract void start();
 }
