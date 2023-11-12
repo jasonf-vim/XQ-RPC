@@ -9,10 +9,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.jasonf.annotation.XQ;
 import org.jasonf.boot.Bootstrap;
 import org.jasonf.channel.handler.*;
 import org.jasonf.config.ProvideConfig;
+import org.jasonf.util.PackageUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,8 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ProviderBootstrap extends Bootstrap {
     public static final Map<String, ProvideConfig<?>> SERVICES = new ConcurrentHashMap<>();
-
-    public static final int PORT = 8102;
 
     private ProviderBootstrap() {
     }
@@ -43,10 +44,35 @@ public class ProviderBootstrap extends Bootstrap {
     }
 
     @Override
-    public Bootstrap release(ProvideConfig<?> config) {
+    public void release(ProvideConfig<?> config) {
         String iface = config.getIface().getName();
-        registry.register(iface);   // 对外暴露服务
+        super.config.getRegistry().register(iface);   // 对外暴露服务
         SERVICES.put(iface, config);    // 维护本地 iface -> impl 映射关系
+    }
+
+    @Override
+    public Bootstrap scan(String packageName) {
+        // 1、扫描包下所有的class文件
+        List<String> classNames = PackageUtil.traversal(packageName);
+        // 2、反射过滤目标实现并对外发布
+        classNames.stream().map(name -> {
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+        }).filter(clazz -> clazz.getAnnotation(XQ.class) != null).forEach(clazz -> {
+            Object obj = null;
+            try {
+                obj = clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            for (Class<?> iface : clazz.getInterfaces()) {
+                ProvideConfig<Object> config = new ProvideConfig<>(iface, obj);
+                release(config);
+            }
+        });
         return this;
     }
 
@@ -70,7 +96,7 @@ public class ProviderBootstrap extends Bootstrap {
                                     .addLast(new MethodCallHandler());
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(PORT).sync();
+            ChannelFuture channelFuture = bootstrap.bind(config.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

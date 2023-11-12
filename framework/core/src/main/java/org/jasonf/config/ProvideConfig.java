@@ -10,10 +10,10 @@ import lombok.Getter;
 
 @Getter
 public class ProvideConfig<T> {
-    private Class<T> iface;   // 服务接口
+    private Class<?> iface;   // 服务接口
     private T impl;     // 服务接口实现类
 
-    public ProvideConfig(Class<T> iface, T impl) {
+    public ProvideConfig(Class<?> iface, T impl) {
         this.iface = iface;
         this.impl = impl;
     }

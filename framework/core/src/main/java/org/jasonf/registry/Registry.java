@@ -24,4 +24,9 @@ public interface Registry {
      * @return 可提供服务的节点列表
      */
     List<InetSocketAddress> detect(String iface);
+
+    /**
+     * 断开连接
+     */
+    void disconnect();
 }

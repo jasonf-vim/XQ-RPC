@@ -1,4 +1,7 @@
-package org.jasonf;
+package org.jasonf.impl;
+
+import org.jasonf.Hello;
+import org.jasonf.annotation.XQ;
 
 /**
  * @Author jasonf
@@ -6,6 +9,7 @@ package org.jasonf;
  * @Description
  */
 
+@XQ
 public class HelloWorld implements Hello {
     @Override
     public String greet(String msg) {

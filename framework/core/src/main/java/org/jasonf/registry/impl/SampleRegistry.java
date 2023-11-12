@@ -21,4 +21,9 @@ public class SampleRegistry implements Registry {
     public List<InetSocketAddress> detect(String iface) {
         return null;
     }
+
+    @Override
+    public void disconnect() {
+
+    }
 }

@@ -10,11 +10,11 @@ import org.jasonf.exception.InvocationNotSupportedException;
  */
 
 public interface Provide {
-    default Bootstrap release(ProvideConfig<?> config) {
+    default void release(ProvideConfig<?> config) {
         throw new InvocationNotSupportedException("当前方法调用不受支持");
     }
 
-    default void start() {
+    default Bootstrap scan(String packageName) {
         throw new InvocationNotSupportedException("当前方法调用不受支持");
     }
 }
