@@ -14,9 +14,9 @@
     <compress type="gzip"/>
 
     <!-- ID生成器 -->
-    <id-generator class="org.jasonf.IDGenerator" room="3" server="5"/>
+    <id-generator class="org.jasonf.generator.impl.SnowIDGenerator" room="3" server="5"/>
 
     <!-- 负载均衡器 -->
-    <load-balancer class="org.jasonf.loadbalance.impl.ConsistentHashLoadBalancer"/>
+    <load-balancer class="org.jasonf.loadbalance.impl.MinResponseTimeLoadBalancer"/>
 
 </configuration>
