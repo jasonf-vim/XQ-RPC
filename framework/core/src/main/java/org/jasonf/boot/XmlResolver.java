@@ -24,6 +24,8 @@ public class XmlResolver {
         XmlParser xmlParser = new XmlParser("XQ-config.xml");
         String appName = resolveAppName(xmlParser);
         if (appName != null) config.setAppName(appName);
+        String group = resolveGroup(xmlParser);
+        if (group != null) config.setGroup(group);
         int port = resolvePort(xmlParser);
         if (port >= 0) config.setPort(port);
         Registry registry = resolveRegistry(xmlParser, config.getRegistry());
@@ -45,6 +47,15 @@ public class XmlResolver {
             return null;
         }
         return appName;
+    }
+
+    private static String resolveGroup(XmlParser xmlParser) {
+        String group = xmlParser.parse("/configuration/group/text()");
+        if (group == null || "".equals(group)) {
+            log.info("无法解析分组名, 将采用默认配置");
+            return null;
+        }
+        return group;
     }
 
     private static int resolvePort(XmlParser xmlParser) {

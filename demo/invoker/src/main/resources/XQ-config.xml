@@ -4,6 +4,9 @@
     <!-- 应用名 -->
     <app>XQ-Invoker</app>
 
+    <!-- 分组 -->
+    <group>master</group>
+
     <!-- 注册中心 -->
     <registry url="zookeeper://123.60.86.242:2181"/>
 

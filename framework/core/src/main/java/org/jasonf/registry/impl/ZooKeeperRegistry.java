@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooKeeper;
 import org.jasonf.Constant;
+import org.jasonf.InvokerBootstrap;
 import org.jasonf.ProviderBootstrap;
 import org.jasonf.exception.ServiceNotFoundException;
 import org.jasonf.registry.Registry;
@@ -30,13 +31,17 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     @Override
-    public void register(String iface) {
-        // 创建服务节点（/rpc/providers/org.jasonf.HelloWorld）
+    public void register(String iface, String group) {
+        // 创建服务节点(/rpc/providers/org.jasonf.HelloWorld)
         String servPath = Constant.PROVIDERS_ROOT_PATH + "/" + iface;
         if (!ZooKeeperUtil.exists(zooKeeper, servPath))
             ZooKeeperUtil.create(zooKeeper, servPath, CreateMode.PERSISTENT);   // 持久节点
-        // 创建本机节点（'公网/局域网ip':'端口号'）
-        String hostPath = servPath + "/" + NetworkUtil.getIPAddr() + ":" + ProviderBootstrap.getInstance().getConfig().getPort();
+        // 创建分组节点(/rpc/providers/org.jasonf.HelloWorld/group)
+        String grpPath = servPath + "/" + group;
+        if (!ZooKeeperUtil.exists(zooKeeper, grpPath))
+            ZooKeeperUtil.create(zooKeeper, grpPath, CreateMode.PERSISTENT);   // 持久节点
+        // 创建本机节点(/rpc/providers/org.jasonf.HelloWorld/group/'公网/局域网ip':'端口号')
+        String hostPath = grpPath + "/" + NetworkUtil.getIPAddr() + ":" + ProviderBootstrap.getInstance().getConfig().getPort();
         if (!ZooKeeperUtil.exists(zooKeeper, hostPath))
             ZooKeeperUtil.create(zooKeeper, hostPath, CreateMode.EPHEMERAL);    // 临时节点
         if (log.isDebugEnabled()) {
@@ -47,8 +52,9 @@ public class ZooKeeperRegistry implements Registry {
     @Override
     public List<InetSocketAddress> detect(String iface) {
         // 拉取可提供服务的节点位置信息
+        String group = InvokerBootstrap.getInstance().getConfig().getGroup();
         List<String> addresses = ZooKeeperUtil.getChildren(zooKeeper,
-                Constant.PROVIDERS_ROOT_PATH + "/" + iface,
+                Constant.PROVIDERS_ROOT_PATH + "/" + iface + "/" + group,
                 ServiceMutation.getInstance());
         // 封装 ip 和 port
         List<InetSocketAddress> nodes = addresses.stream().map(address -> {

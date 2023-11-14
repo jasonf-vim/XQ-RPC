@@ -15,12 +15,11 @@ public class InvokerApp {
 
         InvokeConfig<Hello> helloConf = new InvokeConfig<>(Hello.class);
         Hello hello = helloConf.get();    // 获取代理对象
-        while (true) {
-            System.out.println(hello.greet("XQ"));
+        for (int i = 0; i < 500; i++) {
             try {
-                Thread.sleep(10000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+                System.out.println(hello.greet("XQ"));
+            } catch (RuntimeException ex) {
+                System.out.println("method invoke fail.");
             }
         }
     }

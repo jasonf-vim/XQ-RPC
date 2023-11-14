@@ -14,4 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XQ {
+    String value() default "default";   // 分组信息
 }

@@ -20,6 +20,7 @@ import org.jasonf.transfer.enumeration.SerializeType;
 @Data
 public class Configuration {
     private String appName = "XQ";
+    private String group = "default";
     private int port = 8102;
 
     private Registry registry = new RegistryConfig("zookeeper://123.60.86.242:2181").getRegistry();
