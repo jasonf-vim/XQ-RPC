@@ -46,7 +46,8 @@ public class ProviderBootstrap extends Bootstrap {
     @Override
     public void release(ProvideConfig<?> config) {
         String iface = config.getIface().getName();
-        super.config.getRegistry().register(iface);   // 对外暴露服务
+        String group = config.getGroup();
+        super.config.getRegistry().register(iface, group);   // 对外暴露服务
         SERVICES.put(iface, config);    // 维护本地 iface -> impl 映射关系
     }
 
@@ -62,6 +63,7 @@ public class ProviderBootstrap extends Bootstrap {
                 throw new RuntimeException(ex);
             }
         }).filter(clazz -> clazz.getAnnotation(XQ.class) != null).forEach(clazz -> {
+            String group = clazz.getAnnotation(XQ.class).value();
             Object obj = null;
             try {
                 obj = clazz.newInstance();
@@ -69,7 +71,7 @@ public class ProviderBootstrap extends Bootstrap {
                 throw new RuntimeException(ex);
             }
             for (Class<?> iface : clazz.getInterfaces()) {
-                ProvideConfig<Object> config = new ProvideConfig<>(iface, obj);
+                ProvideConfig<Object> config = new ProvideConfig<>(iface, group, obj);
                 release(config);
             }
         });

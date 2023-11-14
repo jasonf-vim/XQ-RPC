@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SampleRegistry implements Registry {
     @Override
-    public void register(String iface) {
+    public void register(String iface, String group) {
 
     }
 

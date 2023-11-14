@@ -9,7 +9,7 @@ import org.jasonf.annotation.XQ;
  * @Description
  */
 
-@XQ
+@XQ("master")
 public class HelloWorld implements Hello {
     @Override
     public String greet(String msg) {

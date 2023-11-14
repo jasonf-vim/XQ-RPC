@@ -3,6 +3,8 @@
 
         <!ELEMENT app ANY>
 
+        <!ELEMENT group ANY>
+
         <!ELEMENT port ANY>
 
         <!ELEMENT registry EMPTY>

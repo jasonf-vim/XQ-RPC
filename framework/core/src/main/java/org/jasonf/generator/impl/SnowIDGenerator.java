@@ -1,4 +1,6 @@
-package org.jasonf;
+package org.jasonf.generator.impl;
+
+import org.jasonf.generator.IDGenerator;
 
 import java.util.concurrent.atomic.LongAdder;
 
@@ -18,17 +20,18 @@ import static org.jasonf.Constant.*;
  * @Description ID生成器, 雪花算法
  */
 
-public class IDGenerator {
+public class SnowIDGenerator implements IDGenerator {
     private final long LOCATE_ID;
     private long lastTimestamp = -1L;
     private final LongAdder SEQUENCE = new LongAdder();     // 线程安全
 
-    public IDGenerator(long dataCenterId, long machineId) {
+    public SnowIDGenerator(long dataCenterId, long machineId) {
         if (dataCenterId < 0 || dataCenterId > DATA_CENTER_MAX) throw new RuntimeException("数据中心ID不合法");
         if (machineId < 0 || machineId > MACHINE_MAX) throw new RuntimeException("服务器ID不合法");
         LOCATE_ID = dataCenterId << DATA_CENTER_LEFT | machineId << MACHINE_LEFT;
     }
 
+    @Override
     public long getUniqueID() {
         long timestamp = System.currentTimeMillis() - INITIAL_TIMESTAMP;    // 相对起始时间的偏移量
         if (timestamp < lastTimestamp) throw new RuntimeException("服务器时钟回拨");

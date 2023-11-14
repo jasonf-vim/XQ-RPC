@@ -46,6 +46,12 @@ public class InvokerBootstrap extends Bootstrap {
     }
 
     @Override
+    public Bootstrap group(String group) {
+        config.setGroup(group);
+        return this;
+    }
+
+    @Override
     public void start() {
         HeartbeatDetector.start();    // 开启心跳检测
     }

@@ -14,8 +14,9 @@ public interface Registry {
      * 注册服务
      *
      * @param iface 服务接口全限定名
+     * @param group 服务分组信息
      */
-    void register(String iface);
+    void register(String iface, String group);
 
     /**
      * 发现服务
