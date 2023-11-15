@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration SYSTEM "http://jasonf.org/XQ-config.dtd">
+<configuration>
+    <!-- 应用名 -->
+    <app>XQ-Invoker</app>
+
+    <!-- 分组 -->
+    <group>major</group>
+
+    <!-- 注册中心 -->
+    <registry url="zookeeper://123.60.86.242:2181"/>
+
+    <!-- 序列化器 -->
+    <serialize type="jdk"/>
+
+    <!-- 报文压缩方式 -->
+    <compress type="gzip"/>
+
+    <!-- ID生成器 -->
+    <id-generator class="org.jasonf.generator.impl.SnowIDGenerator" room="3" server="5"/>
+
+    <!-- 负载均衡器 -->
+    <load-balancer class="org.jasonf.loadbalance.impl.MinResponseTimeLoadBalancer"/>
+
+</configuration>

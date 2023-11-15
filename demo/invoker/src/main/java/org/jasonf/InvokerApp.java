@@ -13,8 +13,9 @@ public class InvokerApp {
         InvokerBootstrap.getInstance()
                 .start();
 
-        InvokeConfig<Hello> helloConf = new InvokeConfig<>(Hello.class);
-        Hello hello = helloConf.get();    // 获取代理对象
+        InvokeConfig config = new InvokeConfig();
+        config.setInterface(Hello.class);
+        Hello hello = (Hello) config.get();    // 获取代理对象
         for (int i = 0; i < 500; i++) {
             try {
                 System.out.println(hello.greet("XQ"));
