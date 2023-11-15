@@ -3,6 +3,7 @@ package org.jasonf.watcher;
 import io.netty.channel.Channel;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.jasonf.Constant;
 import org.jasonf.InvokerBootstrap;
 import org.jasonf.registry.Registry;
 
@@ -18,7 +19,9 @@ import java.util.Map;
 
 public class ServiceMutation implements Watcher {
     private static volatile ServiceMutation serviceMutation;
-    private Registry registry = InvokerBootstrap.getInstance().getConfig().getRegistry();
+    private final Registry REGISTRY = InvokerBootstrap.getInstance().getConfig().getRegistry();
+    private final int PREFIX_LENGTH = Constant.PROVIDERS_ROOT_PATH.length() + 1;
+    private final int SUFFIX_LENGTH = InvokerBootstrap.getInstance().getConfig().getGroup().length() + 1;
 
     private ServiceMutation() {
     }
@@ -27,8 +30,8 @@ public class ServiceMutation implements Watcher {
     public void process(WatchedEvent event) {
         if (event.getType() == Event.EventType.NodeChildrenChanged) {
             // 重新拉取服务列表
-            String iface = event.getPath().substring(event.getPath().lastIndexOf("/") + 1);
-            List<InetSocketAddress> serviceList = registry.detect(iface);   // 重新添加 watcher
+            String iface = event.getPath().substring(PREFIX_LENGTH, event.getPath().length() - SUFFIX_LENGTH);
+            List<InetSocketAddress> serviceList = REGISTRY.detect(iface);   // 重新添加 watcher
 
             // 辅助心跳检测感知服务下线
             for (Map.Entry<InetSocketAddress, Channel> entry : InvokerBootstrap.CHANNEL_CACHE.entrySet()) {
