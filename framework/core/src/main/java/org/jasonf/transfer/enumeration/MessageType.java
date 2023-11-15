@@ -13,7 +13,8 @@ public enum MessageType {
     REQUEST((byte) 1, "请求"),
     HEART_BEAT((byte) 0, "心跳检测"),
     RESPONSE_SUCCESS((byte) -1, "响应(成功)"),
-    RESPONSE_FAILURE((byte) -128, "响应(失败)");
+    RESPONSE_FAILURE((byte) -128, "响应(失败)"),
+    SERVICE_SHUTDOWN((byte) 127, "服务关闭");
 
     private byte code;
     private String desc;

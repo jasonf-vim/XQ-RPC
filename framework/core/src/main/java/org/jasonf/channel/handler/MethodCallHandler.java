@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.ProviderBootstrap;
+import org.jasonf.boot.ShutdownHook;
 import org.jasonf.protection.RateLimiter;
 import org.jasonf.protection.TokenBucketRateLimiter;
 import org.jasonf.transfer.enumeration.MessageType;
@@ -29,6 +30,14 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
+        if (ShutdownHook.BAFFLE.get()) {
+            msg.setMessageType(MessageType.SERVICE_SHUTDOWN.getCode());
+            ctx.channel().writeAndFlush(msg);
+            return;
+        }   // 请求不处理直接返回
+
+        ShutdownHook.COUNTER.increment();   // before process request, counter add 1
+
         try {
             Request request = (Request) msg.getPayload();
             if (request != null) {
@@ -57,5 +66,7 @@ public class MethodCallHandler extends SimpleChannelInboundHandler<Message> {
             msg.setPayload(null);   // 清除信息
         }
         ctx.channel().writeAndFlush(msg);
+
+        ShutdownHook.COUNTER.decrement();   // after process request, counter add -1
     }
 }

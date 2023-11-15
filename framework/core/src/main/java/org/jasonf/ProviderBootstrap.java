@@ -11,6 +11,7 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.jasonf.annotation.XQ;
 import org.jasonf.boot.Bootstrap;
+import org.jasonf.boot.ShutdownHook;
 import org.jasonf.channel.handler.*;
 import org.jasonf.config.ProvideConfig;
 import org.jasonf.util.PackageUtil;
@@ -80,6 +81,10 @@ public class ProviderBootstrap extends Bootstrap {
 
     @Override
     public void start() {
+        /* ---------------------------------------- 停机钩子函数 ---------------------------------------- */
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+
+        /* ----------------------------------------- 启动 netty ----------------------------------------- */
         EventLoopGroup boss = new NioEventLoopGroup(2);
         EventLoopGroup worker = new NioEventLoopGroup(10);
         try {
