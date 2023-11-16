@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ProxyBeanPostProcessor implements BeanPostProcessor {
     private static final Map<Class<?>, Object> CACHE = new ConcurrentHashMap<>();
-    private static final InvokeConfig CONFIG = new InvokeConfig();
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -29,8 +28,7 @@ public class ProxyBeanPostProcessor implements BeanPostProcessor {
             Class<?> type = field.getType();
             Object obj = CACHE.get(type);   // 优先从缓存获取
             if (obj == null) {
-                CONFIG.setInterface(type);
-                obj = CONFIG.get();
+                obj = InvokeConfig.get(type);
                 CACHE.put(type, obj);
             }   // 构造代理对象并及时缓存
             field.setAccessible(true);
