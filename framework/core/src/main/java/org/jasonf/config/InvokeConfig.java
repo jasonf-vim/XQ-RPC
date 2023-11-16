@@ -14,15 +14,10 @@ import java.lang.reflect.Proxy;
 @Slf4j
 public class InvokeConfig {
     private static final ClassLoader CLASS_LOADER = Thread.currentThread().getContextClassLoader();
-    private static Class<?>[] interfaces;
     private static final RPCInvocationHandler INVOCATION_HANDLER = new RPCInvocationHandler();
 
-    public void setInterface(Class<?> iface) {
-        interfaces = new Class[]{iface};
+    public static Object get(Class<?> iface) {
         INVOCATION_HANDLER.setIface(iface.getName());
-    }
-
-    public Object get() {
-        return Proxy.newProxyInstance(CLASS_LOADER, interfaces, INVOCATION_HANDLER);
+        return Proxy.newProxyInstance(CLASS_LOADER, new Class[]{iface}, INVOCATION_HANDLER);
     }
 }
