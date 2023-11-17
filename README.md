@@ -7,7 +7,7 @@ A concise Remote Procedure Call framework, start from scratch.
 
 #### 2\. 架构设计
 
-![架构设计](./架构设计.svg)
+![架构设计](assets/架构设计.svg)
 
 - 注册中心架构
   - 服务注册与发现：记录和管理可用的服务节点信息（服务名称、服务节点 IP 地址、权重等）
@@ -36,7 +36,7 @@ A concise Remote Procedure Call framework, start from scratch.
 
 #### 3\. 工作流程
 
-![工作流程](./工作流程.svg)
+![工作流程](assets/工作流程.svg)
 
 #### 4\. 可靠性
 
@@ -61,8 +61,8 @@ A concise Remote Procedure Call framework, start from scratch.
 
 - 通信协议（魔数值、版本号、头部长度、整体长度、消息类型、序列化类型、压缩类型、消息ID、消息主体）
 
-![通信协议](./通信协议.svg)
+![通信协议](assets/通信协议.svg)
 
 - 雪花ID（机房号、机器号、时间戳、序列号）
 
-![雪花ID](./雪花ID.svg)
+![雪花ID](assets/雪花ID.svg)
